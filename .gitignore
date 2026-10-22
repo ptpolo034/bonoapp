@@ -1,0 +1,8 @@
+target/
+instalador/salida/
+*.log
+*.db
+.idea/
+*.iml
+.vscode/
+*.tmp
