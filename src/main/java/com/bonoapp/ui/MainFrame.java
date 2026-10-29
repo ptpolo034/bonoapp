@@ -2,6 +2,7 @@ package com.bonoapp.ui;
 
 import com.bonoapp.util.Registro;
 import com.bonoapp.util.Respaldo;
+import com.bonoapp.util.Version;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -34,6 +35,7 @@ public class MainFrame extends JFrame {
     private final CardLayout cartas = new CardLayout();
     private final JPanel contenido = new JPanel(cartas);
     private final JPanel menu = new JPanel();
+    private final Map<String, JToggleButton> botones = new HashMap<>();
     private final ButtonGroup grupo = new ButtonGroup();
     private final Map<String, JPanel> creadas = new HashMap<>();
     private JToggleButton botonInicio;
@@ -67,7 +69,7 @@ public class MainFrame extends JFrame {
         add(menu, BorderLayout.WEST);
         add(contenido, BorderLayout.CENTER);
 
-        agregarSeccion("Inicio", "home", InicioPanel::new);
+        agregarSeccion("Inicio", "home", () -> new InicioPanel(this::irA));
         agregarSeccion("Vendedoras", "users", VendedorasPanel::new);
         agregarSeccion("Boletas", "ticket", BoletasPanel::new);
         agregarSeccion("Liquidación", "checklist", LiquidacionesPanel::new);
@@ -79,6 +81,7 @@ public class MainFrame extends JFrame {
         agregarSeparadorInferior();
         agregarSeccion("Configuración", "settings", ConfiguracionPanel::new);
         agregarSeccion("Cuenta", "user-circle", CuentaPanel::new);
+        agregarFirma();
 
         // Selecciona "Inicio" al abrir
         botonInicio.doClick();
@@ -100,6 +103,20 @@ public class MainFrame extends JFrame {
         menu.add(Box.createVerticalStrut(24));
     }
 
+    /** Version y firma del desarrollador, pequenas y en gris suave, abajo del menu: se ven en todas las pantallas. */
+    private void agregarFirma() {
+        menu.add(Box.createVerticalStrut(12));
+        for (String texto : new String[] {"BonoApp " + Version.ACTUAL, Version.CREDITO}) {
+            JLabel linea = new JLabel(texto);
+            linea.setFont(linea.getFont().deriveFont(11f));
+            linea.setForeground(new Color(0x9CA3AF));
+            linea.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 0));
+            linea.setMaximumSize(new Dimension(Integer.MAX_VALUE, linea.getPreferredSize().height));
+            linea.setAlignmentX(Component.LEFT_ALIGNMENT);
+            menu.add(linea);
+        }
+    }
+
     /** Empuja lo que se agregue despues hacia abajo y deja una linea fina que lo separa del resto. */
     private void agregarSeparadorInferior() {
         menu.add(Box.createVerticalGlue());
@@ -111,6 +128,14 @@ public class MainFrame extends JFrame {
         menu.add(linea);
         menu.add(Box.createVerticalStrut(8));
         zonaInferior = true;
+    }
+
+    /** Cambia a otra seccion del menu, como si se pulsara su boton (la usa la guia de primeros pasos). */
+    private void irA(String nombre) {
+        JToggleButton boton = botones.get(nombre);
+        if (boton != null) {
+            boton.doClick();
+        }
     }
 
     private void agregarSeccion(String nombre, String icono, Supplier<JPanel> fabrica) {
@@ -141,6 +166,7 @@ public class MainFrame extends JFrame {
             cartas.show(contenido, nombre);
         });
 
+        botones.put(nombre, boton);
         grupo.add(boton);
         menu.add(boton);
         if (!zonaInferior || !"Cuenta".equals(nombre)) {

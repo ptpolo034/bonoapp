@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
@@ -42,6 +43,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /** Pantalla de inicio: resumenes y consulta rapida de boletas por numero y fecha. */
 public class InicioPanel extends JPanel implements Actualizable {
@@ -69,7 +71,16 @@ public class InicioPanel extends JPanel implements Actualizable {
     private final ModeloPendientes modeloPendientes = new ModeloPendientes();
     private final JLabel resumenPendientes = new JLabel(" ");
 
+    private final CardLayout cartas = new CardLayout();
+    private final JPanel cuerpo = new JPanel(cartas);
+    private final GuiaPrimerosPasos guia;
+
     public InicioPanel() {
+        this(seccion -> { });
+    }
+
+    /** "irASeccion" lleva a otra pantalla del menu (lo usan los botones de la guia de primeros pasos). */
+    public InicioPanel(Consumer<String> irASeccion) {
         setLayout(new BorderLayout(0, 24));
         setBackground(Theme.FONDO);
         setBorder(BorderFactory.createEmptyBorder(32, 32, 32, 32));
@@ -137,13 +148,24 @@ public class InicioPanel extends JPanel implements Actualizable {
         scroll.getViewport().setOpaque(false);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.getVerticalScrollBar().setUnitIncrement(16);
-        add(scroll, BorderLayout.CENTER);
+        guia = new GuiaPrimerosPasos(irASeccion);
+        cuerpo.setOpaque(false);
+        cuerpo.add(scroll, "resumen");
+        cuerpo.add(guia, "guia");
+        add(cuerpo, BorderLayout.CENTER);
 
         actualizar();
     }
 
     /** Vuelve a calcular los resumenes. Se llama cada vez que se entra a esta seccion. */
     public void actualizar() {
+        // La primera vez (sin ninguna boleta registrada) se muestra la guia en lugar de los resumenes vacios.
+        if (GuiaPrimerosPasos.hayQueMostrar()) {
+            guia.refrescar();
+            cartas.show(cuerpo, "guia");
+        } else {
+            cartas.show(cuerpo, "resumen");
+        }
         valorBoletasHoy.setText(String.valueOf(BoletaDAO.contarEntregadasHoy()));
         valorAhorroAcumulado.setText("$ " + FORMATO_PESOS.format(AhorroDAO.totalAcumulado()));
         valorPrestamos.setText("$ " + FORMATO_PESOS.format(PrestamoDAO.totalPendiente()));

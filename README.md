@@ -15,6 +15,18 @@ reportes, historial de cambios y copia de seguridad. Funciona sin internet y gua
 Si la compilación falla con "Failed to delete target\classes", es el servidor de Java de VS Code que tiene la
 carpeta abierta: no hace falta cerrarlo, basta con volver a ejecutar `mvn -q package`.
 
+## Pruebas automáticas
+Escribí pruebas con JUnit que revisan las reglas del negocio cada vez que cambio algo: tratos por tipo y su migración,
+números repetidos, lote de 2.000, mover y editar boletas, liquidaciones y reversas, número ganador, ahorros, préstamos y
+abonos, historial, lectura de números y copias de seguridad.
+
+    mvn test
+
+- Corren con una carpeta de usuario propia (`target/home-pruebas`, la pone el `pom.xml`), así que **nunca tocan la base de datos real**.
+  Antes de cada prueba se borra esa carpeta y se crea una base nueva; si por error `user.home` no es la de pruebas, se cancelan.
+- `mvn package` también las ejecuta; para empaquetar sin correrlas: `mvn -q package -DskipTests`.
+- Al agregar una regla nueva, agrego su prueba en `src/test/java` (las pruebas de base de datos heredan de `BaseDeDatos`).
+
 ## Reglas del negocio
 - Dos tipos de boleta: Diaria y Premio mayor, cada uno con su precio (Configuración).
 - Los lotes son por día y por tipo: máximo 2.000 boletas por tipo por fecha de entrega, con números de 3 cifras

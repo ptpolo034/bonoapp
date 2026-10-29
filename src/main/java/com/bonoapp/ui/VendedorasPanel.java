@@ -1,6 +1,7 @@
 package com.bonoapp.ui;
 
 import com.bonoapp.db.VendedoraDAO;
+import com.bonoapp.model.TipoBoleta;
 import com.bonoapp.model.Vendedora;
 
 import javax.swing.BorderFactory;
@@ -122,7 +123,7 @@ public class VendedorasPanel extends JPanel {
                     "Ninguna seleccion", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        new TratosDialog(ventana(), seleccionada).setVisible(true);
+        new TratosDialog(ventana(), seleccionada, TipoBoleta.DIARIA).setVisible(true);
     }
 
     private void eliminar() {

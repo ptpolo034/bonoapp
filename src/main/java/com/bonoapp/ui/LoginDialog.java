@@ -2,6 +2,7 @@ package com.bonoapp.ui;
 
 import com.bonoapp.db.UsuarioDAO;
 import com.bonoapp.util.Sesion;
+import com.bonoapp.util.Version;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -78,8 +79,17 @@ public final class LoginDialog extends JDialog {
         botones.add(botonCancelar);
         botones.add(botonAceptar);
 
+        // La firma va abajo del todo, pequena y en gris suave.
+        JLabel firma = new JLabel(Version.CREDITO, JLabel.CENTER);
+        firma.setForeground(Theme.TEXTO_SUAVE);
+        firma.setFont(firma.getFont().deriveFont(11f));
+        firma.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        JPanel pie = new JPanel(new BorderLayout());
+        pie.add(botones, BorderLayout.CENTER);
+        pie.add(firma, BorderLayout.SOUTH);
+
         add(form, BorderLayout.CENTER);
-        add(botones, BorderLayout.SOUTH);
+        add(pie, BorderLayout.SOUTH);
 
         getRootPane().setDefaultButton(botonAceptar);
         pack();

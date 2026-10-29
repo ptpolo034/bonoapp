@@ -1,18 +1,18 @@
 # Tareas de BonoApp
 
 <!-- AVANCE:INICIO -->
-**Avance general: ███░░░░░░░ 33%**
+**Avance general: ██████░░░░ 66%**
 
 | Tarea | Avance |
 |---|---|
 | Por hacer (para la próxima versión) | ░░░░░░░░░░ 0% |
-| Ideas ya acordadas, sin hacer | ░░░░░░░░░░ 0% |
+| Hecho para la versión 1.0-prueba2 (todavía sin entregar) | ██████████ 100% |
 | Hecho en la versión 1.0-prueba1 | ██████████ 100% |
 <!-- AVANCE:FIN -->
 
 Lista viva: se agrega aquí todo lo que salga mientras se prueba el programa (errores, ajustes, ideas del dueño o la dueña).
-Versión instalada actualmente: **1.0-prueba1** (entregada el 2026-10-20). Mientras se prueba no se cambia el código;
-las tareas se hacen juntas en la siguiente versión (**1.0-prueba2**).
+Versión en uso en el computador de uso: **1.0-prueba1** (entregada el 2026-10-20). La **1.0-prueba2** (instalador 1.0.3) ya está lista para instalar.
+Los cambios nuevos que salgan de la prueba se juntan para la siguiente versión.
 
 **Leyenda:** `[x]` hecho · `[ ]` pendiente · `[~]` en curso
 
@@ -21,30 +21,28 @@ El porcentaje de cada sección se calcula solo con las casillas marcadas; las qu
 ---
 
 ## Por hacer (para la próxima versión) (0%)
-- [ ] **Total de boletas en la pantalla de Boletas.**
-  Mientras se entregan las boletas a las vendedoras, el dueño o la dueña quiere ver que se entregaron las 2.000, tanto de la
-  Diaria como del Premio mayor. Debe actualizarse solo después de cada "Registrar entrega", por tipo y para el día que se
-  está viendo (por ejemplo "Diaria: 1.250 de 2.000, faltan 750"), y marcarse como **completo** al llegar a 2.000.
-  Solo en la pantalla de Boletas (no en Inicio).
-  *Por confirmar:* barra de progreso; mostrar cuántas boletas se registraron sin número todavía.
-- [ ] **Firma / crédito del desarrollador en el programa** ("Desarrollado por Henry Polo").
-  Hoy el programa no dice quién lo desarrolló. **Decidido:** el texto estándar **"Desarrollado por Henry Polo"**, en tres lugares:
-  - pantalla de inicio de sesión (línea pequeña, gris suave, abajo);
-  - Configuración → "Acerca de" (versión · Desarrollado por Henry Polo · © 2026);
-  - datos del instalador y de Windows (publicador "Henry Polo", derechos "© 2026 Henry Polo").
+- [ ] **Instalar `BonoApp-1.0.3.exe` en el computador de uso** (`instalador\salida`; Windows mostrará el aviso de "protegió su PC" porque no está firmado). Antes, cerrar BonoApp.
+  *Por confirmar:* si se agrega un contacto (correo o teléfono) junto a la firma; por ahora, solo el nombre.
 
-  *Por confirmar:* si se agrega un contacto (correo o teléfono); por ahora, solo el nombre.
-
-## Ideas ya acordadas, sin hacer (0%)
-- [ ] **Entrega más rápida:** "repetir la entrega de ayer" o pegar una lista de números (depende de cómo le llegan los números).
-- [ ] **Guía de "primeros pasos"** en Inicio cuando todo está vacío.
-- [ ] **Premio mayor:** anotar si el premio se pagó o si el ganador cobró.
-- [ ] **Pruebas automáticas dentro del proyecto**, para proteger los cambios futuros.
-- [ ] **Cifrar** el documento y el teléfono de las vendedoras (riesgo bajo).
+## Descartadas (decidido el 2026-10-27, no se hacen)
+- Entrega más rápida: repetir la entrega de ayer o pegar una lista de números.
+- Premio mayor: anotar si el premio se pagó o si el ganador cobró.
+- Cifrar el documento y el teléfono de las vendedoras.
 
 ## Errores encontrados durante la prueba
 
 *(todavía ninguno reportado; cada error nuevo se agrega aquí como una casilla `- [ ]`)*
+
+## Hecho para la versión 1.0-prueba2 (todavía sin entregar) (100%)
+- [x] **Pruebas automáticas dentro del proyecto** (JUnit, `mvn test`): 26 pruebas de las reglas del negocio (tratos por tipo y migración, números repetidos, lote de 2.000, mover/editar, liquidaciones, ganador, ahorros, préstamos, historial, copias de seguridad). Corren en una carpeta propia, sin tocar la base real. Se comprobó que fallan si se rompe una regla.
+- [x] **Crédito en el instalador:** el instalador muestra como empresa "Henry Polo" y derechos "© 2026 Henry Polo" (comprobado en las propiedades del archivo).
+- [x] **Guía de "primeros pasos"** en Inicio mientras no haya ninguna boleta registrada: 4 pasos (copias de seguridad, precios, vendedoras, primera entrega) con marca verde en los que ya están hechos y un botón que lleva a cada pantalla. Desaparece sola al registrar la primera entrega.
+- [x] **Versión 1.0-prueba2 lista:** instalador `BonoApp-1.0.3.exe` generado (el número del instalador es 1.0.3; el programa se llama 1.0-prueba2); la actualización encima de la 1.0.1 se probó (datos conservados, tratos migrados). El instalador anterior quedó en `instalador\salida\anteriores`.
+- [x] **Tratos independientes por tipo:** la Diaria y el Premio mayor tienen cada una su lista de tratos por vendedora.
+  En Registrar entrega, al cambiar de tipo se muestran los tratos de ese tipo. Los tratos que ya existían se copiaron una sola vez a los dos tipos, para no perder ninguno.
+- [x] **Total de boletas en la pantalla de Boletas:** por tipo y para el día que se ve, "1.250 de 2.000 · Faltan 750", barra de progreso, "Completo" al llegar a 2.000 y cuántas van sin número.
+- [x] **Firma "Desarrollado por Henry Polo"** en el inicio de sesión y en Configuración → Soporte (versión · firma · © 2026).
+- [x] **Firma también en el menú lateral** (abajo, pequeña y en gris suave: versión y "Desarrollado por Henry Polo"), para que se vea en todas las pantallas.
 
 ## Hecho en la versión 1.0-prueba1 (100%)
 - [x] Copias de seguridad automáticas (carpeta elegida al inicio, una por día, últimas 14).

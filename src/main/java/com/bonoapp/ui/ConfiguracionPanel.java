@@ -329,7 +329,8 @@ public class ConfiguracionPanel extends JPanel {
         titulo.setFont(titulo.getFont().deriveFont(Font.BOLD, 16f));
 
         JLabel version = new JLabel("<html><body style='width: 330px'>Versión de BonoApp: <b>" + Version.ACTUAL + "</b><br>"
-                + "<span style='color: gray'>Si algo falla, el error queda anotado en un archivo (errores.log). "
+                + "<span style='color: gray'>" + Version.CREDITO + " · " + Version.DERECHOS + "<br><br>"
+                + "Si algo falla, el error queda anotado en un archivo (errores.log). "
                 + "Envíalo para encontrar la causa.</span></body></html>");
 
         JButton botonRegistro = new JButton("Abrir carpeta del registro");

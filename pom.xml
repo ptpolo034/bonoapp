@@ -45,10 +45,32 @@
             <artifactId>jcalendar</artifactId>
             <version>1.4</version>
         </dependency>
+        <!-- Pruebas automaticas (solo se usan al probar, no van dentro del programa) -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!--
+                Ejecuta las pruebas con "mvn test". Corren con una carpeta de usuario propia (target/home-pruebas),
+                asi que NUNCA tocan la base de datos real (~/.bonoapp).
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <user.home>${project.build.directory}/home-pruebas</user.home>
+                        <java.awt.headless>true</java.awt.headless>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
             <!-- Genera un unico .jar ejecutable con todo incluido -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

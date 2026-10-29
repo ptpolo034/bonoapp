@@ -60,6 +60,8 @@ public class EntregaBoletasDialog extends JDialog {
         todasActivas = VendedoraDAO.listarActivas();
         filtrarVendedoras();
         comboVendedora.addActionListener(e -> cargarTratos());
+        // Los tratos son independientes por tipo: al cambiar de Diaria a Premio mayor se muestran los del otro sorteo.
+        comboTipo.addActionListener(e -> cargarTratos());
 
         campoBuscarVendedora.getDocument().addDocumentListener(new BuscadorListener(this::filtrarVendedoras));
 
@@ -157,17 +159,18 @@ public class EntregaBoletasDialog extends JDialog {
                     "Sin vendedora", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        new TratosDialog((Frame) getOwner(), vendedora).setVisible(true);
+        new TratosDialog((Frame) getOwner(), vendedora, (TipoBoleta) comboTipo.getSelectedItem()).setVisible(true);
         cargarTratos();
     }
 
-    /** Lee los tratos guardados de la vendedora elegida y los muestra (sin tocar los demas campos). */
+    /** Lee los tratos guardados de la vendedora elegida, para el tipo elegido, y los muestra (sin tocar los demas campos). */
     private void cargarTratos() {
         Vendedora vendedora = (Vendedora) comboVendedora.getSelectedItem();
+        TipoBoleta tipo = (TipoBoleta) comboTipo.getSelectedItem();
         tratosActuales = List.of();
-        if (vendedora != null) {
+        if (vendedora != null && tipo != null) {
             try {
-                tratosActuales = TratoDAO.listarNumeros(vendedora.getId());
+                tratosActuales = TratoDAO.listarNumeros(vendedora.getId(), tipo);
             } catch (RuntimeException e) {
                 JOptionPane.showMessageDialog(this, "No se pudieron leer los tratos: " + e.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -177,7 +180,7 @@ public class EntregaBoletasDialog extends JDialog {
         etiquetaTratos.setText(hay
                 ? "<html><body style='width:300px'>" + String.join(", ", tratosActuales)
                 + " (" + tratosActuales.size() + ")</body></html>"
-                : "Esta vendedora no tiene tratos");
+                : "Esta vendedora no tiene tratos de " + (tipo == null ? "este tipo" : "la " + tipo.getEtiqueta()));
         incluirTratos.setEnabled(hay);
         if (hay) {
             incluirTratos.setSelected(true);

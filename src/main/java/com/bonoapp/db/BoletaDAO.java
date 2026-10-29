@@ -109,6 +109,27 @@ public final class BoletaDAO {
                 List.of(texto, parcial, parcial));
     }
 
+    /** Cuantas boletas hay entregadas de un tipo en un dia y cuantas de ellas todavia no tienen numero. */
+    public record AvanceLote(int total, int sinNumero) {
+    }
+
+    /** El avance del lote (hasta MAX_BOLETAS_POR_TIPO) de un tipo en un dia; sirve para ver si ya estan las 2.000. */
+    public static AvanceLote avanceDelLote(TipoBoleta tipo, LocalDate fecha) {
+        String sql = "SELECT COUNT(*), COALESCE(SUM(CASE WHEN numero IS NULL THEN 1 ELSE 0 END), 0)"
+                + " FROM boletas WHERE tipo = ? AND fecha_entrega = ?";
+        try (Connection c = Database.conectar();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, tipo.name());
+            ps.setString(2, fecha.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return new AvanceLote(rs.getInt(1), rs.getInt(2));
+            }
+        } catch (SQLException e) {
+            throw new ErrorRegistrado("No se pudo contar las boletas del dia", e);
+        }
+    }
+
     /** Cuantas boletas de dias anteriores a "hoy" siguen sin liquidar (para avisarlo en la pantalla de Boletas). */
     public static int contarPendientesAnteriores(LocalDate hoy) {
         String sql = "SELECT COUNT(*) FROM boletas WHERE estado = 'ENTREGADA' AND fecha_entrega < ?";
@@ -478,6 +499,17 @@ public final class BoletaDAO {
         List<String> partes = new ArrayList<>();
         conteo.forEach((nombre, veces) -> partes.add(veces > 1 ? nombre + " (" + veces + ")" : nombre));
         return String.join(", ", partes);
+    }
+
+    /** Si ya se registro alguna boleta, en cualquier dia (sirve para saber si es la primera vez que se usa el programa). */
+    public static boolean hayBoletas() {
+        try (Connection c = Database.conectar();
+             PreparedStatement ps = c.prepareStatement("SELECT 1 FROM boletas LIMIT 1");
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next();
+        } catch (SQLException e) {
+            throw new ErrorRegistrado("No se pudo revisar si hay boletas", e);
+        }
     }
 
     public static int contarEntregadasHoy() {

@@ -46,6 +46,7 @@ public class BoletasPanel extends JPanel implements Actualizable {
     private final JDateChooser campoDia = new JDateChooser(new Date());
     private final JCheckBox todosLosDias = new JCheckBox("Todos los días");
     private final JLabel avisoAnteriores = new JLabel(" ");
+    private final AvanceDeLotes avanceDeLotes = new AvanceDeLotes();
     private TablaConVacio tablaConVacio;
     private static final int LIMITE_BUSQUEDA = 1000;
     private static final int LIMITE_TODOS_LOS_DIAS = 2000;
@@ -103,7 +104,11 @@ public class BoletasPanel extends JPanel implements Actualizable {
         JPanel encabezado = new JPanel(new BorderLayout(0, 10));
         encabezado.setOpaque(false);
         encabezado.add(filaTitulo, BorderLayout.NORTH);
-        encabezado.add(filaDia, BorderLayout.CENTER);
+        JPanel centroEncabezado = new JPanel(new BorderLayout(0, 12));
+        centroEncabezado.setOpaque(false);
+        centroEncabezado.add(filaDia, BorderLayout.NORTH);
+        centroEncabezado.add(avanceDeLotes, BorderLayout.CENTER);
+        encabezado.add(centroEncabezado, BorderLayout.CENTER);
         add(encabezado, BorderLayout.NORTH);
 
         Tablas.estilizar(tabla);
@@ -204,6 +209,13 @@ public class BoletasPanel extends JPanel implements Actualizable {
         } else {
             tablaConVacio.setMensajeVacio("No hubo entregas el " + dia.format(FORMATO_FECHA),
                     "Elige otro día o marca \"Todos los días\".");
+        }
+
+        // El avance del lote (por tipo) solo tiene sentido para un dia concreto, no para una busqueda ni para "todos".
+        boolean mostrarAvance = !buscando && !verTodos;
+        avanceDeLotes.setVisible(mostrarAvance);
+        if (mostrarAvance) {
+            avanceDeLotes.mostrar(dia);
         }
 
         // Lo que quedo sin liquidar de dias anteriores no se ve en la tabla de hoy: se avisa para no olvidarlo.

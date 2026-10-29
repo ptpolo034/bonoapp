@@ -35,7 +35,8 @@ public final class Database {
             CREATE TABLE IF NOT EXISTS tratos (
                 id           INTEGER PRIMARY KEY AUTOINCREMENT,
                 vendedora_id INTEGER NOT NULL REFERENCES vendedoras(id) ON DELETE CASCADE,
-                numero       TEXT NOT NULL
+                numero       TEXT NOT NULL,
+                tipo         TEXT NOT NULL DEFAULT 'DIARIA'
             )
             """;
 
@@ -78,7 +79,11 @@ public final class Database {
                 // Los numeros de boleta (3 cifras) se repiten por fuerza: se venden ~2.000 boletas.
                 st.execute("DROP INDEX IF EXISTS idx_boletas_numero_tipo");
                 st.execute(CREACION_TRATOS);
+                // Se mira ANTES de las migraciones si la tabla ya tenia la columna "tipo": en las bases de versiones
+                // anteriores no la tiene, y los tratos que ya existian valian para los dos sorteos.
+                boolean tratosYaTenianTipo = existeColumna(st, "tratos", "tipo");
                 migrarTratosSinUnico(st);
+                migrarTratosPorTipo(st, tratosYaTenianTipo);
                 st.execute("""
                         CREATE TABLE IF NOT EXISTS usuarios (
                             id                    INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -221,6 +226,30 @@ public final class Database {
         st.execute(CREACION_TRATOS);
         st.execute("INSERT INTO tratos (id, vendedora_id, numero) SELECT id, vendedora_id, numero FROM tratos_viejos");
         st.execute("DROP TABLE tratos_viejos");
+    }
+
+    /**
+     * Los tratos antes eran los mismos para la Diaria y el Premio mayor. Ahora son independientes (columna "tipo"):
+     * en una base antigua se agrega la columna y cada trato existente se copia para los dos sorteos, asi nadie
+     * pierde los suyos y despues cada tipo se edita por separado. Solo actua una vez (cuando falta la columna).
+     */
+    private static void migrarTratosPorTipo(Statement st, boolean yaTeniaTipo) throws SQLException {
+        if (yaTeniaTipo) {
+            return;
+        }
+        agregarColumnaSiFalta(st, "tratos", "tipo", "TEXT NOT NULL DEFAULT 'DIARIA'");
+        st.execute("INSERT INTO tratos (vendedora_id, numero, tipo) SELECT vendedora_id, numero, 'PREMIO_MAYOR' FROM tratos");
+    }
+
+    private static boolean existeColumna(Statement st, String tabla, String columna) throws SQLException {
+        try (ResultSet rs = st.executeQuery("PRAGMA table_info(" + tabla + ")")) {
+            while (rs.next()) {
+                if (columna.equals(rs.getString("name"))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /** Agrega la columna "estado" a boletas si viene de una version anterior que no la tenia. */
