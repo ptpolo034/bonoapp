@@ -51,3 +51,10 @@ abonos, historial, lectura de números y copias de seguridad.
 ## Instalador (Windows 10/11, 64 bits)
 
 El instalador se genera con `instalador\crear_instalador.ps1` (ver las instrucciones dentro del script) y queda en `instalador\salida`. Lleva su propio Java incluido, se instala solo para el usuario que lo ejecuta (sin permisos de administrador) y no borra los datos al actualizar o desinstalar (viven en `%USERPROFILE%\.bonoapp`). Requiere WiX Toolset 3.x en el equipo que lo genera. Para sacar una version nueva: cambiar `util/Version.java`, compilar, y ejecutar el script con `-VersionInstalador` mayor (por ejemplo 1.0.2). No cambiar el UUID de actualizacion del script.
+
+## Derechos
+
+Publico este código para mostrar mi trabajo. Todos los derechos están reservados.
+
+---
+Desarrollado por Henry Polo.
